@@ -1,13 +1,12 @@
-import ml from 'ml-regression';
+import { SLR } from 'ml-regression';
 import csv from 'csvtojson';
-const SLR = ml.SLR;
 const csvFilePath = 'data/Advertising.csv';
 
 let csvData = [],
-    x = [],
-    y = [];
+    inputs = [],
+    outputs = [];
 
-let regressionModel;
+let regression;
 
 csv()
     .fromFile(csvFilePath)
@@ -15,6 +14,22 @@ csv()
         csvData.push(jsonObj);
     })
     .on('done', () => {
-        console.log('data reseived');
+        dressData();
+        performRegression();
     })
 
+function dressData() {
+    csvData.forEach((row) => {
+        inputs.push(f(row.Radio));
+        outputs.push(f(row.Sales));
+    })
+}
+
+function f(str) {
+    return parseFloat(str);
+}
+
+function performRegression() {
+    regression = new SLR(inputs, outputs);
+    console.log(regression.toString(3));
+}
