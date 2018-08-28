@@ -1,6 +1,7 @@
 import { SLR } from 'ml-regression';
 import csv from 'csvtojson';
-const csvFilePath = 'data/Advertising.csv';
+import readline from 'readline';
+const csvFilePath = './data/Advertising.csv';
 
 let csvData = [],
     inputs = [],
@@ -8,28 +9,35 @@ let csvData = [],
 
 let regression;
 
+const rl = readline.createInterface({
+    input: process.stdin, 
+    output: process.stdout
+});
+
 csv()
-    .fromFile(csvFilePath)
-    .on('json', (jsonObj) => {
-        csvData.push(jsonObj);
-    })
-    .on('done', () => {
-        dressData();
-        performRegression();
-    })
+.fromFile(csvFilePath)
+.then((jsonArr) => {
+    csvData = csvData.concat(jsonArr);
+    dressData();
+    performRegression();
+})
 
 function dressData() {
     csvData.forEach((row) => {
-        inputs.push(f(row.Radio));
-        outputs.push(f(row.Sales));
+        inputs.push(parseFloat(row.radio));
+        outputs.push(parseFloat(row.sales));
     })
-}
-
-function f(str) {
-    return parseFloat(str);
 }
 
 function performRegression() {
     regression = new SLR(inputs, outputs);
     console.log(regression.toString(3));
+    predictOutput();
+}
+
+function predictOutput() {
+    rl.question('Enter input X for prediction (Press CTRL+C to exit) : ', (answer) => {
+        console.log(`At X = ${answer}, y =  ${regression.predict(parseFloat(answer))}`);
+        predictOutput();
+    });
 }
