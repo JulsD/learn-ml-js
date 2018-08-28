@@ -1,0 +1,12 @@
+{
+  "dependencies": {
+    "csvtojson": "^2.0.8",
+    "ml-regression": "^4.4.2"
+  },
+  "name": "ml-with-js-study",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "https://github.com/JulsD/learn-ml-js.git",
+  "author": "Julia Ducthak <Dutchak.Julia@gmail.com>",
+  "license": "MIT"
+}
