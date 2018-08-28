@@ -8,3 +8,13 @@ let csvData = [],
     y = [];
 
 let regressionModel;
+
+csv()
+    .fromFile(csvFilePath)
+    .on('json', (jsonObj) => {
+        csvData.push(jsonObj);
+    })
+    .on('done', () => {
+        console.log('data reseived');
+    })
+
