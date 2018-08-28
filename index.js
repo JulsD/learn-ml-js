@@ -110,5 +110,23 @@ function dressKnnData() {
 
 function train() {
     knn = new KNN(trainingSetX, trainingSetY, {k: 7});
-    // test();
+    test();
+}
+
+function test() {
+    const result = knn.predict(testSetX);
+    const testSetLength = testSetX.length;
+    const predictionError = error(result, testSetY);
+    console.log(`Test Set Size = ${testSetLength} and number of Misclassifications = ${predictionError}`);
+    // predict();
+}
+
+function error(predicted, expected) {
+    let misclassifications = 0;
+    for (var index = 0; index < predicted.length; index++) {
+        if (predicted[index] !== expected[index]) {
+            misclassifications++;
+        }
+    }
+    return misclassifications;
 }
