@@ -1,55 +1,57 @@
 import csv from 'csvtojson';
 
 // ========== SLR - simple linear regression ==========
-import { SLR } from 'ml-regression';
-import readline from 'readline';
-const slrFilePath = './data/Advertising.csv';
+// import { SLR } from 'ml-regression';
+// import readline from 'readline';
+// const slrFilePath = './data/Advertising.csv';
 
-let slrData = [],
-slrInputs = [],
-slrOutputs = [];
+// let slrData = [],
+// slrInputs = [],
+// slrOutputs = [];
 
-let regression;
+// let regression;
 
-const rl = readline.createInterface({
-    input: process.stdin, 
-    output: process.stdout
-});
+// const rl = readline.createInterface({
+//     input: process.stdin, 
+//     output: process.stdout
+// });
 
-csv()
-.fromFile(slrFilePath)
-.then((jsonArr) => {
-    slrData = slrData.concat(jsonArr);
-    dressSlrData();
-    performRegression();
-})
+// csv()
+// .fromFile(slrFilePath)
+// .then((jsonArr) => {
+//     slrData = slrData.concat(jsonArr);
+//     dressSlrData();
+//     performRegression();
+// })
 
-function dressSlrData() {
-    slrData.forEach((row) => {
-        slrInputs.push(parseFloat(row.radio));
-        slrOutputs.push(parseFloat(row.sales));
-    })
-}
+// function dressSlrData() {
+//     slrData.forEach((row) => {
+//         slrInputs.push(parseFloat(row.radio));
+//         slrOutputs.push(parseFloat(row.sales));
+//     })
+// }
 
-function performRegression() {
-    regression = new SLR(slrInputs, slrOutputs);
-    console.log(regression.toString(3));
-    predictOutput();
-}
+// function performRegression() {
+//     regression = new SLR(slrInputs, slrOutputs);
+//     console.log(regression.toString(3));
+//     predictOutput();
+// }
 
-function predictOutput() {
-    rl.question('Enter input X for prediction (Press CTRL+C to exit) : ', (answer) => {
-        console.log(`At X = ${answer}, y =  ${regression.predict(parseFloat(answer))}`);
-    });
-}
+// function predictOutput() {
+//     rl.question('Enter input X for prediction (Press CTRL+C to exit) : ', (answer) => {
+//         console.log(`At X = ${answer}, y =  ${regression.predict(parseFloat(answer))}`);
+//     });
+// }
 
 
 // ========== KNN - k-Nearest-Neighbours ==========
 import KNN from 'ml-knn';
+import prompt from 'prompt';
 
 const knnFilePath = './data/iris.csv';
 const names = ['sepalLength', 'sepalWidth', 'petalLength', 'petalWidth', 'type'];
-let seperationSize;
+let seperationSize,
+    typesArray = [];
 
 let knnData = [],
     knnInputs = [],
@@ -87,7 +89,7 @@ function dressKnnData() {
         types.add(row.type);
     });
 
-    let typesArray = [...types];
+    typesArray = [...types];
 
     knnData.forEach((row) => {
         let rowArray, typeNumber;
@@ -98,14 +100,18 @@ function dressKnnData() {
 
         knnInputs.push(rowArray);
         knnOutputs.push(typeNumber);
-
-        trainingSetX = knnInputs.slice(0, seperationSize);
-        trainingSetY = knnOutputs.slice(0, seperationSize);
-        testSetX = knnInputs.slice(seperationSize);
-        testSetY = knnOutputs.slice(seperationSize);
-
-        train();
     });
+
+    trainingSetX = knnInputs.slice(0, seperationSize);
+    trainingSetY = knnOutputs.slice(0, seperationSize);
+    testSetX = knnInputs.slice(seperationSize);
+    testSetY = knnOutputs.slice(seperationSize);
+
+    console.log("seperationSize: ", seperationSize);
+    console.log("knnInputs: ", knnInputs);
+    console.log("testSetX1: ", testSetX);
+
+    train();
 }
 
 function train() {
@@ -114,11 +120,12 @@ function train() {
 }
 
 function test() {
+    console.log("testSetX2: ", testSetX)
     const result = knn.predict(testSetX);
     const testSetLength = testSetX.length;
     const predictionError = error(result, testSetY);
     console.log(`Test Set Size = ${testSetLength} and number of Misclassifications = ${predictionError}`);
-    // predict();
+    predict();
 }
 
 function error(predicted, expected) {
@@ -129,4 +136,18 @@ function error(predicted, expected) {
         }
     }
     return misclassifications;
+}
+
+function predict() {
+    let temp = [];
+    prompt.start();
+    
+    prompt.get(['Sepal Length', 'Sepal Width', 'Petal Length', 'Petal Width'], function (err, result) {
+        if (!err) {
+            for (var key in result) {
+                temp.push(parseFloat(result[key]));
+            }
+            console.log(`With ${temp} -- type =  ${typesArray[knn.predict(temp)]}`);
+        }
+    });
 }
